@@ -49,7 +49,7 @@ tfidf_matrix = vect.fit_transform(sentences)
 feature_names = vect.get_feature_names()
 
 model = KMeans(n_clusters=2, init='k-means++', max_iter=100, n_init=1)
-model.fit(tfidf_matrix)
+model.fit(vect)
 
 
 print("Top terms per cluster:")

@@ -7,9 +7,10 @@ from nltk import ne_chunk, pos_tag, word_tokenize
 from nltk.tree import Tree
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.cluster import KMeans
-
-# nltk.download('popular')
+import collections
+import networkx as nx
+import matplotlib.pyplot as plt
+nltk.download('popular')
 
 stop_words = set(nltk.corpus.stopwords.words("english"))
 
@@ -37,7 +38,7 @@ for row in dataset.itertuples():
         tokenized = nltk.tokenize.word_tokenize(row.SYMPTOM_TEXT)
         for word in tokenized:
 
-            pre = preprocess(word)
+            pre = preprocess2(word)
 
             if pre != '':
                 curr_words.append(pre)
@@ -48,18 +49,6 @@ vect = TfidfVectorizer(min_df=3)
 tfidf_matrix = vect.fit_transform(sentences)
 feature_names = vect.get_feature_names()
 
-model = KMeans(n_clusters=2, init='k-means++', max_iter=100, n_init=1)
-model.fit(tfidf_matrix)
-
-
-print("Top terms per cluster:")
-order_centroids = model.cluster_centers_.argsort()[:, ::-1]
-terms = vect.get_feature_names()
-for i in range(2):
-    print("Cluster %d:" % i),
-    for ind in order_centroids[i, :10]:
-        print(' %s' % terms[ind]),
-    print
 
 # def get_ifidf_for_words(text):
 #     tfidf_matrix = vect.transform(text).todense()
