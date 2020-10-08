@@ -8,7 +8,9 @@ from nltk.tree import Tree
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.cluster import KMeans
-
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
 # nltk.download('popular')
 
 stop_words = set(nltk.corpus.stopwords.words("english"))
@@ -40,6 +42,7 @@ for row in dataset.itertuples():
             pre = preprocess(word)
 
             if pre != '':
+                pre = nltk.PorterStemmer().stem(pre)
                 curr_words.append(pre)
         sentences.append(' '.join(curr_words))
 
@@ -48,27 +51,57 @@ vect = TfidfVectorizer(min_df=3)
 tfidf_matrix = vect.fit_transform(sentences)
 feature_names = vect.get_feature_names()
 
-model = KMeans(n_clusters=2, init='k-means++', max_iter=100, n_init=1)
+n = 20
+
+model = KMeans(n_clusters=n, init='k-means++', max_iter=100, n_init=1)
 model.fit(tfidf_matrix)
 
 
 print("Top terms per cluster:")
 order_centroids = model.cluster_centers_.argsort()[:, ::-1]
 terms = vect.get_feature_names()
-for i in range(2):
+for i in range(n):
     print("Cluster %d:" % i),
     for ind in order_centroids[i, :10]:
         print(' %s' % terms[ind]),
     print
 
-# def get_ifidf_for_words(text):
-#     tfidf_matrix = vect.transform(text).todense()
-#     feature_index = tfidf_matrix[0, :].nonzero()[1]
-#     tfidf_scores = zip([feature_names[i] for i in feature_index], [
-#                        tfidf_matrix[0, x] for x in feature_index])
-#     return dict(tfidf_scores)
+dataset['cluster'] = model.labels_
+
+clusters = dataset.groupby(['cluster', 'SERIOUS']).size()
 
 
-# print("TF-IDF table")
-# print({k: v for k, v in sorted(get_ifidf_for_words(
-#     sentences).items(), key=lambda item: item[1], reverse=True)})
+fig, ax1 = plt.subplots(figsize = (26, 15))
+sns.heatmap(clusters.unstack(level = 'SERIOUS'), ax = ax1, cmap = 'Reds')
+ax1.set_xlabel('SERIOUS').set_size(2)
+ax1.set_ylabel('cluster').set_size(n)
+plt.show()
+
+def make_array(num):
+    new = []
+    try:
+        new.append(clusters[num]['Y'])
+    except KeyError:
+        new.append(0)
+    try:
+        new.append(clusters[num]['N'])
+    except KeyError:
+        new.append(0)
+    return new
+
+
+new_arr = []
+for i in range(0, n):
+    new_arr.append(make_array(i))
+chi_array = np.array(new_arr)
+print(chi_array)
+
+chi2_stat, p_val, dof, ex = stats.chi2_contingency(chi_array)
+print("===Chi2 Stat===")
+print(chi2_stat)
+print("===Degrees of Freedom===")
+print(dof)
+print("===P-Value===")
+print(p_val)
+print("===Contingency Table===")
+print(ex)
