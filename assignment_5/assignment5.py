@@ -52,6 +52,9 @@ print(stems)
 print('Stop Words')
 print(list(stop_words_list))
 
+
+all_words = {}
+
 def computeTFDict(words):
     """ Returns a tf dictionary for each words whose keys are all
     the unique words in the words and whose values are their
@@ -60,6 +63,12 @@ def computeTFDict(words):
     # Counts the number of times the word appears in words
     wordsTFDict = {}
     for word in words.split(' '):
+        
+        if word in all_words:
+            all_words[word] += 1
+        else:
+            all_words[word] = 1
+
         if word in wordsTFDict:
             wordsTFDict[word] += 1
         else:
@@ -74,6 +83,20 @@ tfDict = []
 for i in range(len(sentences)):
 
     tfDict.append(computeTFDict(sentences[i]))
+
+
+popped_words = set()
+
+for word in all_words:
+    if all_words[word] == 1:
+        popped_words.add(word)
+        for temp in tfDict:
+            temp.pop(word, "")
+
+print('Popped Words')
+print(popped_words)
+
+all_words_list = list(all_words.keys())
 
 print('TF')
 print(tfDict)
@@ -145,7 +168,7 @@ npTfIDF = np.array(tfidfVector)
 distOut = 1-pairwise_distances(npTfIDF, metric="cosine")
 
 print('COSINE')
-print(distOut)
+print(pd.DataFrame(distOut))
 
 # def dot_product(vector_x, vector_y):
 #     dot = 0.0
