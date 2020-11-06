@@ -54,6 +54,9 @@ print('Stop Words')
 print(list(stop_words_list))
 
 
+all_words = {}
+
+
 def computeTFDict(words):
     """ Returns a tf dictionary for each words whose keys are all
     the unique words in the words and whose values are their
@@ -62,6 +65,12 @@ def computeTFDict(words):
     # Counts the number of times the word appears in words
     wordsTFDict = {}
     for word in words.split(' '):
+
+        if word in all_words:
+            all_words[word] += 1
+        else:
+            all_words[word] = 1
+
         if word in wordsTFDict:
             wordsTFDict[word] += 1
         else:
@@ -78,23 +87,28 @@ for i in range(len(sentences)):
 
     tfDict.append(computeTFDict(sentences[i]))
 
+
+popped_words = set()
+all_words_list = set()
+
+for word in all_words:
+    if all_words[word] == 1:
+
+        popped_words.add(word)
+        for temp in tfDict:
+            temp.pop(word, "")
+    else:
+        all_words_list.add(word)
+all_words_list = list(all_words_list)
+
+print('Popped Words')
+print(popped_words)
+
+print("ALL WORDS LIST")
+print(all_words_list)
+
 print('TF')
 print(tfDict)
-
-# Rows: 0 - 8 (these are the paragraphs)
-# Col: list of every word
-
-
-def convertListOfDictToCSV(arr):
-    """ Takes in a list of dictionaries, converts it into a pandas dataframe
-    and writes the data to a csv file.
-    """
-
-    # Build columns for data frame
-    columns = []
-    for d in arr:
-        for k, v in d:
-            columns.append(k)
 
 
 def computeCountDict():
@@ -166,7 +180,7 @@ npTfIDF = np.array(tfidfVector)
 distOut = 1-pairwise_distances(npTfIDF, metric="cosine")
 
 print('COSINE')
-print(distOut)
+print(pd.DataFrame(distOut))
 
 # def dot_product(vector_x, vector_y):
 #     dot = 0.0
@@ -183,3 +197,18 @@ print(distOut)
 
 
 # review_similarity = dot_product(tfidfVector[0], tfidfVector[1]) /  magnitude(tfidfVector[0]) * magnitude(tfidfVector[1])
+
+def convertListOfDictToCSV(all_words_column, list_of_dicts, file_name):
+    """ Takes in a list of dictionaries, converts it into a pandas dataframe
+    and writes the data to a csv file.
+    """
+
+    df = pd.DataFrame(columns=all_words_column)
+    for i in range(len(list_of_dicts)):
+        df.loc[i] = pd.Series(list_of_dicts[i])
+
+    df.to_excel(file_name, na_rep=0)
+
+
+convertListOfDictToCSV(all_words_list, tfDict, "tfDict.xlsx")
+convertListOfDictToCSV(all_words_list, tfidfDict, "tfIdfDict.xlsx")
