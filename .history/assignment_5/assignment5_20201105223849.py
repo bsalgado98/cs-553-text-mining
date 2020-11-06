@@ -73,6 +73,10 @@ def computeTFDict(words):
 
 
 tfDict = []
+# Rows: 0 - 8 (these are the paragraphs)
+# Col: list of every word
+tfDict_df = pd.DataFrame.from_dict(tfDict, orient="index")
+tfDict_df.to_csv("tfDict.csv")
 
 for i in range(len(sentences)):
 
@@ -81,20 +85,7 @@ for i in range(len(sentences)):
 print('TF')
 print(tfDict)
 
-# Rows: 0 - 8 (these are the paragraphs)
-# Col: list of every word
-
-
-def convertListOfDictToCSV(arr):
-    """ Takes in a list of dictionaries, converts it into a pandas dataframe
-    and writes the data to a csv file.
-    """
-
-    # Build columns for data frame
-    columns = []
-    for d in arr:
-        for k, v in d:
-            columns.append(k)
+CSV = "\n".join([k+','+','.join(v) for k, v in d.items()])
 
 
 def computeCountDict():

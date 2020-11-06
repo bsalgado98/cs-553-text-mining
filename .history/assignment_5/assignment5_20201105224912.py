@@ -90,11 +90,8 @@ def convertListOfDictToCSV(arr):
     and writes the data to a csv file.
     """
 
-    # Build columns for data frame
-    columns = []
-    for d in arr:
-        for k, v in d:
-            columns.append(k)
+
+tfDict_df.to_csv("tfDict.csv")
 
 
 def computeCountDict():

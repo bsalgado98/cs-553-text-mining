@@ -89,12 +89,10 @@ def convertListOfDictToCSV(arr):
     """ Takes in a list of dictionaries, converts it into a pandas dataframe
     and writes the data to a csv file.
     """
+    pass
 
-    # Build columns for data frame
-    columns = []
-    for d in arr:
-        for k, v in d:
-            columns.append(k)
+
+tfDict_df.to_csv("tfDict.csv")
 
 
 def computeCountDict():
