@@ -14,7 +14,6 @@ def preprocess(x):
     x = [w for w in x.split()]
     return ' '.join(x)
 
-<<<<<<< HEAD
 def build_wordcloud(review, sentiment):
     comment_words = '' 
     stopwords = set(STOPWORDS) 
@@ -38,9 +37,7 @@ def build_wordcloud(review, sentiment):
     plt.tight_layout(pad = 0) 
     
     plt.show() 
-=======
 sentiment_numbers = []
->>>>>>> 324f4b0f15f0c27bbb07db8ee5a7a0d2ab216657
 
 def get_sentiment(review): 
         analysis = TextBlob(review) 
