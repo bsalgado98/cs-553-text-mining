@@ -14,37 +14,38 @@ def preprocess(x):
     x = [w for w in x.split()]
     return ' '.join(x)
 
-def build_wordcloud(review, sentiment):
+def build_wordcloud(review, color):
     comment_words = '' 
     stopwords = set(STOPWORDS) 
-    for word in review: 
-        # word = str(word) 
-        tokens = word.split() 
+    # for word in review: 
+    #     # word = str(word) 
+    #     tokens = word.split() 
 
-        for i in range(len(tokens)): 
-            tokens[i] = tokens[i].lower() 
+    #     for i in range(len(tokens)): 
+    #         tokens[i] = tokens[i].lower() 
         
-        comment_words += " ".join(tokens)+" "
+    #     comment_words += " ".join(tokens)+" "
     
     wordcloud = WordCloud(width = 800, height = 800, 
                     background_color ='white', 
                     stopwords = stopwords, 
-                    min_font_size = 10).generate(comment_words) 
+                    min_font_size = 10).generate(review) 
 
-    plt.figure(figsize = (8, 8), facecolor = None) 
+    plt.figure(figsize = (8, 8), facecolor = color) 
     plt.imshow(wordcloud) 
     plt.axis("off") 
     plt.tight_layout(pad = 0) 
     
     plt.show() 
+
 sentiment_numbers = []
 
 def get_sentiment(review): 
         analysis = TextBlob(review) 
         sentiment_numbers.append(analysis.sentiment.polarity)
-        if analysis.sentiment.polarity > 0.01: 
+        if analysis.sentiment.polarity > 0.05: 
             return 'positive'
-        elif analysis.sentiment.polarity < -0.03: 
+        elif analysis.sentiment.polarity < -0.05: 
             return 'negative'
         else: 
             return 'neutral'
@@ -77,32 +78,53 @@ for txt in list_of_files:
         sentiment.append(get_sentiment(corpus[count]))
         count += 1
 
-build_wordcloud(corpus[0], sentiment[0])
+# plt.style.use('ggplot')
 
-# print(corpus[0:2])
-# print(sentiment[1000:1050])
-
-
-
-
-plt.style.use('ggplot')
-
-x = ['positive', 'neutral', 'negative']
-y = [sentiment.count('positive'), sentiment.count('neutral'), sentiment.count('negative')]
-plt.bar(x,y)
-plt.show()
+# x = ['positive', 'neutral', 'negative']
+# y = [sentiment.count('positive'), sentiment.count('neutral'), sentiment.count('negative')]
+# plt.bar(x,y)
+# plt.show()
 
 
 
-plt.style.use('ggplot')
+# plt.style.use('ggplot')
 
-x = ['positive', 'neutral', 'negative']
-y = [sentiment.count('positive'), sentiment.count('neutral'), sentiment.count('negative')]
-plt.bar(x,y)
-plt.show()
+# x = ['positive', 'neutral', 'negative']
+# y = [sentiment.count('positive'), sentiment.count('neutral'), sentiment.count('negative')]
+# plt.bar(x,y)
+# plt.show()
 
 
 
 num_bins = 7
 n, bins, patches = plt.hist(sentiment_numbers, num_bins, facecolor='blue', alpha=0.5)
 plt.show()
+
+
+
+positive_sentiment = []
+negative_sentiment = []
+neutral_sentiment = []
+
+for i in range(len(sentiment)):
+    if sentiment[i] == "positive":
+        positive_sentiment.append(i)
+    elif sentiment[i] == "negative":
+        negative_sentiment.append(i)
+    else:
+        neutral_sentiment.append(i)
+
+def build_review(indices, corpus):
+    review = ""
+    for i in indices:
+        review += " " + corpus[i] + " "
+    
+    return review
+
+positive_reviews = build_review(positive_sentiment, corpus)
+negative_reviews = build_review(negative_sentiment, corpus)
+neutral_reviews = build_review(neutral_sentiment, corpus)
+
+build_wordcloud(positive_reviews, 'green')
+build_wordcloud(negative_reviews, 'red')
+build_wordcloud(neutral_reviews, 'blue')
