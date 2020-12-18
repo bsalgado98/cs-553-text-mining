@@ -94,6 +94,15 @@ plt.show()
 
 
 
+plt.style.use('ggplot')
+
+x = ['positive', 'neutral', 'negative']
+y = [sentiment.count('positive'), sentiment.count('neutral'), sentiment.count('negative')]
+plt.bar(x,y)
+plt.show()
+
+
+
 num_bins = 7
 n, bins, patches = plt.hist(sentiment_numbers, num_bins, facecolor='blue', alpha=0.5)
 plt.show()
