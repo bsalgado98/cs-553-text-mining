@@ -5,25 +5,32 @@ import nltk
 import regex as re
 import os 
 import matplotlib.pyplot as plt
+from textblob.sentiments import NaiveBayesAnalyzer
 
 def preprocess(x):
     x = re.sub('[^a-z\s]', '', x.lower())
     x = [w for w in x.split()]
     return ' '.join(x)
 
+sentiment_numbers = []
+
 def get_sentiment(review): 
         analysis = TextBlob(review) 
-        if analysis.sentiment.polarity > 0: 
+        sentiment_numbers.append(analysis.sentiment.polarity)
+        if analysis.sentiment.polarity > 0.01: 
             return 'positive'
-        elif analysis.sentiment.polarity == 0: 
-            return 'neutral'
-        else: 
+        elif analysis.sentiment.polarity < -0.03: 
             return 'negative'
+        else: 
+            return 'neutral'
+
+
 
 stop_words = set(nltk.corpus.stopwords.words("english"))
 
 corpus = []
 sentiment = []
+
 
 list_of_files = os.listdir("movie reviews")
 
@@ -50,5 +57,15 @@ for txt in list_of_files:
 
 
 
-print(corpus[0:2])
-print(sentiment[1000:1050])
+plt.style.use('ggplot')
+
+x = ['positive', 'neutral', 'negative']
+y = [sentiment.count('positive'), sentiment.count('neutral'), sentiment.count('negative')]
+plt.bar(x,y)
+plt.show()
+
+
+
+num_bins = 7
+n, bins, patches = plt.hist(sentiment_numbers, num_bins, facecolor='blue', alpha=0.5)
+plt.show()
